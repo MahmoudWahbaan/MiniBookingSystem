@@ -1,4 +1,4 @@
-from DataBaseConnection import *
+from Core.DB.DataBaseConnection import *
 connection = connect()
 if connection is not None:
     print("Connected to the database successfully")
