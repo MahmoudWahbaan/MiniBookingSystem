@@ -8,6 +8,9 @@ class User:
         self.__LastName = __LastName
         self.__ContactNumber = __ContactNumber
     
+    def __str__(self):
+        return f"Email: {self.__Email}, UserName: {self.__UserName}, FirstName: {self.__FirstName}, LastName: {self.__LastName}, ContactNumber: {self.__ContactNumber}"
+
     def getUserName(self):
         return self.__UserName
     
@@ -28,21 +31,27 @@ class User:
     
     def setPassword(self, __Password):
         self.__Password = __Password
+        self.__UpdateUser()
     
     def setEmail(self, __Email):
         self.__Email = __Email
+        self.__UpdateUser()
     
     def setUserName(self, __UserName):
         self.__UserName = __UserName
+        self.__UpdateUser()
     
     def setFirstName(self, __FirstName):
         self.__FirstName = __FirstName
+        self.__UpdateUser()
     
     def setLastName(self, __LastName):
         self.__LastName = __LastName
+        self.__UpdateUser()
     
     def setContactNumber(self, __ContactNumber):
         self.__ContactNumber = __ContactNumber
+        self.__UpdateUser()
     
     def InsertUser(self):
         try:
@@ -59,12 +68,45 @@ class User:
             print(e)
             return False
     
-    def DeleteUser(self, UserName):
+    def DeleteUser(self):
         try:
             connection = connect()
             db_cursor = cursor(connection)
             query = "DELETE FROM User WHERE UserName = %s"
+            values = (self.UserName,)
+            db_cursor.execute(query, values)
+            connection.commit()
+            db_cursor.close()
+            connection.close()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+    
+    @staticmethod
+    def SearchUser(UserName):
+        try:
+            connection = connect()
+            db_cursor = cursor(connection)
+            query = "SELECT * FROM User WHERE UserName = %s"
             values = (UserName,)
+            db_cursor.execute(query, values)
+            result = db_cursor.fetchone()
+            db_cursor.close()
+            connection.close()
+            if result is not None:
+                return True
+            return False
+        except Exception as e:
+            print(e)
+            return None
+    
+    def __UpdateUser(self):
+        try:
+            connection = connect()
+            db_cursor = cursor(connection)
+            query = "UPDATE User SET Email = %s, Password_Hash = SHA2(%s, 256), FirstName = %s, LastName = %s, ContactNumber = %s WHERE UserName = %s"
+            values = (self.__Email, self.__Password, self.__FirstName, self.__LastName, self.__ContactNumber, self.__UserName)
             db_cursor.execute(query, values)
             connection.commit()
             db_cursor.close()
