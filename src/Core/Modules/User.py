@@ -1,4 +1,8 @@
 from src.Core.DB.DataBaseConnection import *
+from src.Core.Utils.DateAndTime import *
+from datetime import datetime
+from src.Core.Modules.TimeSlot import *
+
 class User:
     def __init__(self ,  __Email , __UserName , __Password , __FirstName , __LastName , __ContactNumber):
         self.__Email = __Email
@@ -53,6 +57,23 @@ class User:
         self.__ContactNumber = __ContactNumber
         self.__UpdateUser()
     
+    def getUser_ID(self):
+        if self.__User_ID is None:
+            try :
+                connection = connect()
+                db_cursor = cursor(connection)
+                query = "SELECT User_ID FROM User WHERE UserName = %s"
+                values = (self.__UserName,)
+                db_cursor.execute(query, values)
+                self.__User_ID = db_cursor.fetchone()[0]
+                db_cursor.close()
+                connection.close()
+                return self.__User_ID
+            except Exception as e:
+                print(e)
+                return None
+        return self.__User_ID
+    
     def InsertUser(self):
         try:
             connection = connect()
@@ -60,6 +81,7 @@ class User:
             query = "INSERT INTO User (Email, UserName, Password_Hash, FirstName, LastName, ContactNumber) VALUES (%s, %s, SHA2(%s, 256), %s, %s, %s)"
             values = (self.__Email, self.__UserName, self.__Password, self.__FirstName, self.__LastName, self.__ContactNumber)
             db_cursor.execute(query, values)
+            self.__User_ID = db_cursor.lastrowid
             connection.commit()
             db_cursor.close()
             connection.close()
@@ -73,7 +95,7 @@ class User:
             connection = connect()
             db_cursor = cursor(connection)
             query = "DELETE FROM User WHERE UserName = %s"
-            values = (self.UserName,)
+            values = (self.__UserName,)
             db_cursor.execute(query, values)
             connection.commit()
             db_cursor.close()
@@ -111,6 +133,23 @@ class User:
             connection.commit()
             db_cursor.close()
             connection.close()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def CreateTimeSlot(self,StartTime,EndTime):
+        try:
+            if not validateDate(StartTime) or not validateDate(EndTime):
+                print("Invalid Date")
+                return False
+            if(PrepareDate(StartTime) >= PrepareDate(EndTime)):
+                print("Invalid Date")
+                return False
+            Host_ID = self.getUser_ID()
+            State = 'Free'
+            Slot = TimeSlot(Host_ID,State,PrepareDate(StartTime),PrepareDate(EndTime))
+            Slot.Insert()
             return True
         except Exception as e:
             print(e)
