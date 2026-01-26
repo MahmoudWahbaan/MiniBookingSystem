@@ -11,6 +11,7 @@ class User:
         self.__FirstName = __FirstName
         self.__LastName = __LastName
         self.__ContactNumber = __ContactNumber
+        self.__User_ID = None
     
     def __str__(self):
         return f"Email: {self.__Email}, UserName: {self.__UserName}, FirstName: {self.__FirstName}, LastName: {self.__LastName}, ContactNumber: {self.__ContactNumber}"

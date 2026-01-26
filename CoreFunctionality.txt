@@ -1,0 +1,22 @@
+- USER :
+1 - Insert User (DONE)
+2 - Delete User (DONE)
+3 - Update User (DONE)
+4 - Get User (DONE)
+5 - Create Time slot {HOST} (DONE) 
+6 - Book Time slot {CLIENT} (PENDING)
+7 - Cancel Meeting {CLIENT,HOST} (PENDING)
+
+- TIME SLOT:
+1 - Insert Time slot (DONE)
+2 - Update Time slot (PENDING)
+3 - Show all free time slots (DONE)
+
+- MEETING:
+1 - Book Time slot (PENDING)
+2 - Cancel Meeting (PENDING)
+3 - Update Meeting Status Dynamically (PENDING)
+
+- LOGIN SYSTEM:
+1 - Login (PENDING)
+2 - Register (PENDING)
