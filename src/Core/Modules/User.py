@@ -150,8 +150,10 @@ class User:
             Host_ID = self.getUser_ID()
             State = 'Free'
             Slot = TimeSlot(Host_ID,State,PrepareDate(StartTime),PrepareDate(EndTime))
-            Slot.Insert()
             return True
         except Exception as e:
             print(e)
             return False
+    
+    def BookTimeSlot(self, TimeSlot_ID):
+        return TimeSlot.BookTimeSlot(TimeSlot_ID, self.getUser_ID())
