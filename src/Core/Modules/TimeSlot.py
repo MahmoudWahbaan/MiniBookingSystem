@@ -140,7 +140,7 @@ class TimeSlot:
             return False
 
     @staticmethod
-    def FindFreeTimeSlotsForUser(Host_ID):
+    def FindFreeTimeSlotsForUserByID(Host_ID):
         try:
             Connection = connect()
             Cursor = cursor(Connection)
@@ -153,7 +153,21 @@ class TimeSlot:
         except Exception as e:
             print(e)
             return []
-    
+    @staticmethod
+    def FindFreeTimeSlotsForUserByUserName(UserName):
+        try:
+            Connection = connect()
+            Cursor = cursor(Connection)
+            Host_ID = User.FindUserID(UserName)
+            query = "SELECT TimeSlot_ID FROM TimeSlot WHERE Host_ID = %s AND State = 'Free'"
+            Cursor.execute(query, (Host_ID,))
+            result = [item[0] for item in Cursor.fetchall()]
+            Cursor.close()
+            Connection.close()
+            return result
+        except Exception as e:
+            print(e)
+            return []
 
     @staticmethod
     def BookTimeSlot(TimeSlot_ID, Client_ID):

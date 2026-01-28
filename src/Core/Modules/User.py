@@ -2,6 +2,7 @@ from src.Core.DB.DataBaseConnection import *
 from src.Core.Utils.DateAndTime import *
 from datetime import datetime
 from src.Core.Modules.TimeSlot import *
+from src.Core.Modules.Meeting import Meeting
 
 class User:
     def __init__(self ,  __Email , __UserName , __Password , __FirstName , __LastName , __ContactNumber):
@@ -63,7 +64,7 @@ class User:
             try :
                 connection = connect()
                 db_cursor = cursor(connection)
-                query = "SELECT User_ID FROM User WHERE UserName = %s"
+                query = "SELECT ID FROM User WHERE UserName = %s"
                 values = (self.__UserName,)
                 db_cursor.execute(query, values)
                 self.__User_ID = db_cursor.fetchone()[0]
@@ -107,6 +108,22 @@ class User:
             return False
     
     @staticmethod
+    def DeleteByUserName(UserName):
+        try:
+            connection = connect()
+            db_cursor = cursor(connection)
+            query = "DELETE FROM User WHERE UserName = %s"
+            values = (UserName,)
+            db_cursor.execute(query, values)
+            connection.commit()
+            db_cursor.close()
+            connection.close()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    @staticmethod
     def SearchUser(UserName):
         try:
             connection = connect()
@@ -124,6 +141,42 @@ class User:
             print(e)
             return None
     
+    @staticmethod
+    def Login(UserName, Password):
+        try:
+            connection = connect()
+            db_cursor = cursor(connection)
+            query = "SELECT * FROM User WHERE UserName = %s AND Password_Hash = SHA2(%s, 256)"
+            values = (UserName, Password)
+            db_cursor.execute(query, values)
+            result = db_cursor.fetchone()
+            db_cursor.close()
+            connection.close()
+            if result is not None:
+                return True
+            return False
+        except Exception as e:
+            print(e)
+            return False
+    
+    @staticmethod
+    def FindUserID(UserName):
+        try:
+            connection = connect()
+            db_cursor = cursor(connection)
+            query = "SELECT ID FROM User WHERE UserName = %s"
+            values = (UserName,)
+            db_cursor.execute(query, values)
+            result = db_cursor.fetchone()
+            db_cursor.close()
+            connection.close()
+            if result is not None:
+                return result[0]
+            return None
+        except Exception as e:
+            print(e)
+            return None
+
     def __UpdateUser(self):
         try:
             connection = connect()
@@ -157,3 +210,7 @@ class User:
     
     def BookTimeSlot(self, TimeSlot_ID):
         return TimeSlot.BookTimeSlot(TimeSlot_ID, self.getUser_ID())
+    @staticmethod
+    def CancelMeeting(Meeting_ID):
+        return Meeting.CancelMeeting(Meeting_ID)
+        
